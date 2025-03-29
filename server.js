@@ -6,7 +6,7 @@ require('dotenv').config();
 
 // Initialize Express
 const app = express();
-const PORT = process.env.PORT || 5000;  // You can set your preferred port here
+const PORT = process.env.PORT || 3000;  // You can set your preferred port here
 
 // Middleware to allow cross-origin requests
 app.use(cors());
@@ -20,13 +20,29 @@ app.get('/convert', async (req, res) => {
 
     // Validate input
     if (!amount || !from || !to) {
-        return res.status(400).json({ error: 'Missing required parameters' });
+        return res.status(400).json({ error: 'Missing required parameters: amount, from, and to' });
+    }
+
+    // Ensure the amount is a valid number
+    if (isNaN(amount) || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid amount. Please provide a positive number.' });
     }
 
     try {
         // Fetch conversion rate from Exchangerate API
         const response = await axios.get(`https://v6.exchangerate-api.com/v6/${process.env.EXCHANGE_API_KEY}/latest/${from}`);
+        
+        // Check if the response contains valid conversion rates
+        if (!response.data || !response.data.conversion_rates) {
+            return res.status(500).json({ error: 'Error fetching conversion rates from the API.' });
+        }
+
         const rates = response.data.conversion_rates;
+
+        // Ensure the 'to' currency exists in the rates
+        if (!rates[to]) {
+            return res.status(400).json({ error: `Conversion rate for ${to} not available.` });
+        }
 
         // Calculate the converted amount
         const convertedAmount = (rates[to] * amount).toFixed(2);
@@ -34,7 +50,7 @@ app.get('/convert', async (req, res) => {
         // Respond with the converted amount
         res.json({ convertedAmount });
     } catch (error) {
-        console.error(error);
+        console.error('Error fetching data from the API:', error);
         res.status(500).json({ error: 'Error fetching data from the API' });
     }
 });
