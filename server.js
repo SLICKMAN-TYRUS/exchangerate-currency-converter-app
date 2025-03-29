@@ -6,7 +6,7 @@ require('dotenv').config();
 
 // Initialize Express
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware to allow cross-origin requests
 app.use(cors());
@@ -22,11 +22,19 @@ app.get('/convert', async (req, res) => {
     if (!amount || !from || !to) {
         return res.status(400).json({ error: 'Missing required parameters' });
     }
+    if (isNaN(amount) || amount <= 0) {
+        return res.status(400).json({ error: 'Amount must be a positive number' });
+    }
 
     try {
         // Fetch conversion rate from Exchangerate API
         const response = await axios.get(`https://v6.exchangerate-api.com/v6/${process.env.EXCHANGE_API_KEY}/latest/${from}`);
         const rates = response.data.conversion_rates;
+
+        // Ensure the rate exists
+        if (!rates[to]) {
+            return res.status(400).json({ error: `Conversion rate not available for ${to}` });
+        }
 
         // Calculate the converted amount
         const convertedAmount = (rates[to] * amount).toFixed(2);
@@ -39,6 +47,6 @@ app.get('/convert', async (req, res) => {
 });
 
 // Start the server
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+app.listen(process.env.PORT || 5000, '0.0.0.0', () => {
+    console.log('Server running on port 5000');
 });
