@@ -1,6 +1,6 @@
 // Import required modules
 const express = require('express');
-const axios = require('axios'); // Corrected import statement
+const axios = require('axios');  // Changed from import to require
 const cors = require('cors');
 require('dotenv').config();
 
