@@ -1,52 +1,44 @@
-// Import the required modules
+// Import required modules
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
-require('dotenv').config(); // Ensure .env is loaded
+require('dotenv').config();
 
-// Initialize the express app
+// Initialize Express
 const app = express();
-const port = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors()); // Enable CORS for frontend interactions
-app.use(express.json()); // Parse JSON bodies
+// Middleware to allow cross-origin requests
+app.use(cors());
 
-// Route to fetch exchange rates
-app.get('/api/exchange-rate', async (req, res) => {
-  const baseCurrency = req.query.base || 'USD'; // Default to 'USD' if no base currency is provided
-  const targetCurrency = req.query.target || 'EUR'; // Default to 'EUR' if no target currency is provided
-  
-  try {
-    const response = await axios.get(`https://api.exchangerate-api.com/v4/latest/${baseCurrency}`, {
-      headers: { Authorization: `Bearer ${process.env.EXCHANGE_API_KEY}` }
-    });
+// Serve static files (e.g., HTML, CSS, JS) from the public directory
+app.use(express.static('public'));
 
-    // Check if the target currency exists in the response
-    if (!response.data.rates[targetCurrency]) {
-      return res.status(404).json({ message: `Target currency ${targetCurrency} not found.` });
+// Endpoint for currency conversion
+app.get('/convert', async (req, res) => {
+    const { amount, from, to } = req.query;
+
+    // Validate input
+    if (!amount || !from || !to) {
+        return res.status(400).json({ error: 'Missing required parameters' });
     }
 
-    // Return the exchange rate data
-    res.json({
-      baseCurrency,
-      targetCurrency,
-      rate: response.data.rates[targetCurrency],
-      date: response.data.date,
-    });
-  } catch (error) {
-    // Log the error and send a user-friendly response
-    console.error('Error fetching exchange rates:', error.message);
-    res.status(500).json({ message: 'Error fetching exchange rates. Please try again later.' });
-  }
-});
+    try {
+        // Fetch conversion rate from Exchangerate API
+        const response = await axios.get(`https://v6.exchangerate-api.com/v6/${process.env.EXCHANGE_API_KEY}/latest/${from}`);
+        const rates = response.data.conversion_rates;
 
-// Route to serve the homepage (if needed)
-app.get('/', (req, res) => {
-  res.send('Welcome to the Exchangerate Currency Converter API!');
+        // Calculate the converted amount
+        const convertedAmount = (rates[to] * amount).toFixed(2);
+
+        res.json({ convertedAmount });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error fetching data from the API' });
+    }
 });
 
 // Start the server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
 });
