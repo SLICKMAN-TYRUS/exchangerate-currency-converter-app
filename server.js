@@ -1,12 +1,12 @@
 // Import required modules
 const express = require('express');
-const axios = require('axios');  // Changed from import to require
+const axios = require('axios');  // Ensure correct require syntax
 const cors = require('cors');
 require('dotenv').config();
 
 // Initialize Express
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;  // You can set your preferred port here
 
 // Middleware to allow cross-origin requests
 app.use(cors());
@@ -31,6 +31,7 @@ app.get('/convert', async (req, res) => {
         // Calculate the converted amount
         const convertedAmount = (rates[to] * amount).toFixed(2);
 
+        // Respond with the converted amount
         res.json({ convertedAmount });
     } catch (error) {
         console.error(error);
