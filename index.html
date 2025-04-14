@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Converter</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Currency Converter</h1>
+    <p>Convert currencies easily using real-time exchange rates. Enter the amount, select the source and target currencies, and hit "Convert".</p>
+
+    <form id="convertForm">
+        <label for="amount">Amount:</label>
+        <input type="number" id="amount" placeholder="Amount" required min="0.01" step="any">
+        
+        <label for="fromCurrency">From Currency:</label>
+        <select id="fromCurrency" required>
+            <option value="" disabled selected>Select Source Currency</option>
+            <option value="USD">USD - United States Dollar</option>
+            <option value="EUR">EUR - Euro</option>
+            <option value="GBP">GBP - British Pound</option>
+            <option value="INR">INR - Indian Rupee</option>
+            <!-- More currencies can be added here -->
+        </select>
+
+        <span>to</span>
+
+        <label for="toCurrency">To Currency:</label>
+        <select id="toCurrency" required>
+            <option value="" disabled selected>Select Target Currency</option>
+            <option value="USD">USD - United States Dollar</option>
+            <option value="EUR">EUR - Euro</option>
+            <option value="GBP">GBP - British Pound</option>
+            <option value="INR">INR - Indian Rupee</option>
+            <!-- More currencies can be added here -->
+        </select>
+
+        <button type="submit">Convert</button>
+    </form>
+
+    <p id="result"></p>
+    <p id="error" style="color: red; display: none;"></p>
+
+    <script src="app.js"></script>
+</body>
+</html>
