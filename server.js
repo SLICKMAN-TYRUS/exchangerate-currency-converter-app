@@ -6,7 +6,7 @@ require('dotenv').config();
 
 // Initialize Express
 const app = express();
-const PORT = process.env.PORT || 3000;  // You can set your preferred port here
+const PORT = process.env.PORT || 4000;  // Changed port to 4000
 
 // Middleware to allow cross-origin requests
 app.use(cors());
@@ -31,7 +31,7 @@ app.get('/convert', async (req, res) => {
     try {
         // Fetch conversion rate from Exchangerate API
         const response = await axios.get(`https://v6.exchangerate-api.com/v6/${process.env.EXCHANGE_API_KEY}/latest/${from}`);
-        
+
         // Check if the response contains valid conversion rates
         if (!response.data || !response.data.conversion_rates) {
             return res.status(500).json({ error: 'Error fetching conversion rates from the API.' });
