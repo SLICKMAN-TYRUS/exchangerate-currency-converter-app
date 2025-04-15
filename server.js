@@ -6,7 +6,7 @@ require('dotenv').config();
 
 // Initialize Express
 const app = express();
-const PORT = process.env.PORT || 5000;  // Changed port to 4000
+const PORT = 5000;  // Set the port to 5000 explicitly
 
 // Middleware to allow cross-origin requests
 app.use(cors());
