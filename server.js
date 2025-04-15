@@ -2,7 +2,7 @@
 const express = require('express');
 const axios = require('axios');  // Ensure correct require syntax
 const cors = require('cors');
-require('dotenv').config();
+require('dotenv').config();  // Load environment variables from .env
 
 // Initialize Express
 const app = express();
@@ -29,8 +29,14 @@ app.get('/convert', async (req, res) => {
     }
 
     try {
+        // Ensure API key is correctly loaded
+        const apiKey = process.env.EXCHANGE_API_KEY;
+        if (!apiKey) {
+            return res.status(500).json({ error: 'API key not found. Please ensure the .env file contains the key.' });
+        }
+
         // Fetch conversion rate from Exchangerate API
-        const response = await axios.get(`https://v6.exchangerate-api.com/v6/${process.env.EXCHANGE_API_KEY}/latest/${from}`);
+        const response = await axios.get(`https://v6.exchangerate-api.com/v6/${apiKey}/latest/${from}`);
 
         // Check if the response contains valid conversion rates
         if (!response.data || !response.data.conversion_rates) {
