@@ -1,18 +1,23 @@
 // Import required modules
 const express = require('express');
-const axios = require('axios');  // Ensure correct require syntax
+const axios = require('axios');
 const cors = require('cors');
-require('dotenv').config();  // Load environment variables from .env
+require('dotenv').config(); // Load environment variables from .env
 
 // Initialize Express
 const app = express();
-const PORT = 5000;  // Set the port to 5000 explicitly
+const PORT = 5000; // Set the port to 5000 explicitly
 
 // Middleware to allow cross-origin requests
 app.use(cors());
 
 // Serve static files (e.g., HTML, CSS, JS) from the public directory
 app.use(express.static('public'));
+
+// Serve the index.html file at the root ("/") endpoint
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/public/index.html');
+});
 
 // Endpoint for currency conversion
 app.get('/convert', async (req, res) => {
@@ -65,3 +70,4 @@ app.get('/convert', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on http://0.0.0.0:${PORT}`);
 });
+
